@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アメリカ経済データ</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+
+<body>
+
+    <div>
+        <h2>GDP</h2>
+        <canvas id="chartGDP"></canvas>
+    </div>
+    <div>
+        <h2>失業率</h2>
+        <canvas id="chartUnemployment"></canvas>
+    </div>
+    <div>
+        <h2>CPI</h2>
+        <canvas id="chartCPI"></canvas>
+    </div>
+    <div>
+        <h2>PPI</h2>
+        <canvas id="chartPPI"></canvas>
+    </div>
+    <div>
+        <h2>FOMC金利</h2>
+        <canvas id="chartFOMC"></canvas>
+    </div>
+
+    <script>
+        const API_KEY = '4AedHd6AbxyY-3xkaG5V';  // APIキーをこの部分に入力してください。
+
+        function fetchDataAndDrawChart(endpoint, chartElementId, label) {
+            fetch(`https://www.quandl.com/api/v3/datasets/FRED/${endpoint}?api_key=${API_KEY}`)
+                .then(response => response.json())
+                .then(data => {
+                    const dates = data.dataset.data.map(item => item[0]);
+                    const values = data.dataset.data.map(item => item[1]);
+
+                    new Chart(document.getElementById(chartElementId).getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: dates.reverse(),
+                            datasets: [{
+                                label: label,
+                                data: values.reverse(),
+                                borderColor: 'blue',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        unit: 'year'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+
+        fetchDataAndDrawChart('GDP', 'chartGDP', 'GDP');
+        fetchDataAndDrawChart('UNRATE', 'chartUnemployment', '失業率');
+        fetchDataAndDrawChart('CPIAUCNS', 'chartCPI', 'CPI');
+        fetchDataAndDrawChart('PPIACO', 'chartPPI', 'PPI');
+        fetchDataAndDrawChart('FEDFUNDS', 'chartFOMC', 'FOMC金利');
+
+    </script>
+
+</body>
+
+</html>
